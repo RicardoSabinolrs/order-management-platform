@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "order-management.fullname" . }}-api
+  labels:
+    {{- include "order-management.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+  selector:
+    {{- include "order-management.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: api

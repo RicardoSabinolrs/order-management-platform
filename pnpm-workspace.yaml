@@ -1,0 +1,10 @@
+packages:
+  - "apps/web"
+  - "packages/*"
+
+allowBuilds:
+  esbuild: set this to true or false
+
+# Scripts de build permitidos (pnpm bloqueia por padrao, por supply chain).
+onlyBuiltDependencies:
+  - esbuild

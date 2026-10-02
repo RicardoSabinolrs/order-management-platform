@@ -1,0 +1,438 @@
+/* ---------------------------------------------------------------------------
+   Estrutura da aplicacao: barra lateral fixa + area de conteudo
+--------------------------------------------------------------------------- */
+.shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  min-height: 100vh;
+  transition: grid-template-columns 200ms ease;
+}
+
+.shell[data-collapsed='true'] {
+  grid-template-columns: var(--sidebar-collapsed) 1fr;
+}
+
+/* -- barra lateral --------------------------------------------------------- */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-5) var(--space-4);
+  background: var(--nav-bg);
+  color: var(--nav-ink);
+  border-right: 1px solid var(--nav-line);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-1);
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand__mark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  color: #fff;
+  background: var(--gradient-brand);
+  box-shadow: var(--shadow-accent);
+}
+
+.brand__text {
+  min-width: 0;
+}
+
+.brand__name {
+  display: block;
+  color: var(--nav-ink-strong);
+  font-size: var(--text-md);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.brand__env {
+  display: block;
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  color: var(--nav-ink);
+  letter-spacing: 0.02em;
+}
+
+.nav {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.nav__group {
+  display: grid;
+  gap: 2px;
+}
+
+.nav__section {
+  padding: 0 var(--space-3) var(--space-2);
+  font-size: var(--text-2xs);
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--nav-ink) 75%, transparent);
+  white-space: nowrap;
+}
+
+.nav__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 10px var(--space-3);
+  border-radius: 10px;
+  color: var(--nav-ink);
+  font-size: var(--text-md);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.nav__link:hover {
+  background: var(--surface-hover);
+  color: var(--nav-ink-strong);
+}
+
+/* Item ativo em gradiente: o unico ponto forte de cor da navegacao. */
+.nav__link.is-active {
+  background: var(--gradient-brand);
+  color: #fff;
+  font-weight: 650;
+  box-shadow: var(--shadow-accent);
+}
+
+.nav__link svg {
+  flex-shrink: 0;
+}
+
+/* Recolhida: so os icones, centralizados. O rotulo vira `title` no link. */
+.shell[data-collapsed='true'] .sidebar {
+  padding-inline: var(--space-3);
+}
+
+.shell[data-collapsed='true'] .brand {
+  justify-content: center;
+}
+
+.shell[data-collapsed='true'] .brand__text,
+.shell[data-collapsed='true'] .nav__label {
+  display: none;
+}
+
+.shell[data-collapsed='true'] .nav__section {
+  padding-inline: 0;
+  text-align: center;
+  font-size: 0;
+}
+
+/* Um traco no lugar do titulo da secao mantem o agrupamento visivel. */
+.shell[data-collapsed='true'] .nav__section::before {
+  content: '';
+  display: block;
+  width: 18px;
+  height: 2px;
+  margin: 0 auto;
+  border-radius: 2px;
+  background: var(--nav-line);
+}
+
+.shell[data-collapsed='true'] .nav__link {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.shell__scrim {
+  display: none;
+}
+
+/* -- area principal -------------------------------------------------------- */
+.main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: var(--topbar-height);
+  padding: var(--space-3) var(--space-8);
+  background: color-mix(in srgb, var(--plane) 80%, transparent);
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+}
+
+.topbar__lead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.topbar__heading {
+  min-width: 0;
+}
+
+.topbar__greeting {
+  font-size: var(--text-lg);
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar__date {
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+}
+
+/* So a primeira letra: `capitalize` faria "1 De Outubro" em portugues. */
+.topbar__date::first-letter {
+  text-transform: uppercase;
+}
+
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink-secondary);
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.icon-btn:hover {
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+.topbar__divider {
+  width: 1px;
+  height: 28px;
+  margin: 0 var(--space-1);
+  background: var(--line);
+}
+
+/* -- usuario na topbar ----------------------------------------------------- */
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 4px 10px 4px 4px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.user-chip:hover,
+.user-chip[aria-expanded='true'] {
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+.user-chip__text {
+  display: grid;
+  min-width: 0;
+}
+
+.user-chip__name {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.user-chip__role {
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  color: var(--ink-muted);
+}
+
+.user-menu__panel {
+  min-width: 260px;
+}
+
+.user-menu__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 10px 10px 14px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--line);
+}
+
+.user-menu__who {
+  min-width: 0;
+}
+
+.user-menu__caption {
+  font-size: var(--text-2xs);
+  color: var(--ink-muted);
+}
+
+.user-menu__name {
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.user-menu__email {
+  font-size: var(--text-xs);
+  color: var(--ink-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 1440px;
+  padding: var(--space-6) var(--space-8) var(--space-12);
+}
+
+.page-head {
+  margin-bottom: var(--space-5);
+}
+
+.page-head__title {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.page-head__subtitle {
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+
+.stack {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+
+/* -- telas estreitas ------------------------------------------------------- */
+@media (max-width: 900px) {
+  .shell,
+  .shell[data-collapsed='true'] {
+    grid-template-columns: 1fr;
+  }
+
+  /* Gaveta: fora da tela ate o botao de menu chamar. A preferencia de
+     recolher vale so no desktop, entao aqui a barra aparece sempre inteira. */
+  .sidebar,
+  .shell[data-collapsed='true'] .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 30;
+    width: min(280px, 85vw);
+    padding-inline: var(--space-4);
+    transform: translateX(-100%);
+    transition: transform 200ms ease;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .shell[data-drawer='true'] .sidebar {
+    transform: none;
+  }
+
+  .shell[data-collapsed='true'] .brand { justify-content: flex-start; }
+  .shell[data-collapsed='true'] .brand__text { display: block; }
+  .shell[data-collapsed='true'] .nav__label { display: inline; }
+  .shell[data-collapsed='true'] .nav__link { justify-content: flex-start; padding-inline: var(--space-3); }
+  .shell[data-collapsed='true'] .nav__section { padding-inline: var(--space-3); text-align: left; font-size: var(--text-2xs); }
+  .shell[data-collapsed='true'] .nav__section::before { display: none; }
+
+  .shell__scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    border: none;
+    background: rgb(12 14 26 / 45%);
+  }
+
+  .topbar,
+  .content {
+    padding-inline: var(--space-4);
+  }
+
+  .user-chip__text,
+  .user-chip > svg,
+  .topbar__date,
+  .topbar__fullscreen,
+  .topbar__divider,
+  .pill-btn__text,
+  .pill-btn > svg:last-child {
+    display: none;
+  }
+
+  .pill-btn {
+    width: 38px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .user-chip {
+    padding: 0;
+  }
+
+  /* No celular a saudacao e o que importa no topo; o resto cede espaco. */
+  .topbar__greeting {
+    font-size: var(--text-md);
+  }
+
+  .topbar__actions {
+    gap: 6px;
+  }
+
+  .topbar__actions .mock-badge {
+    display: none;
+  }
+}

@@ -1,0 +1,20 @@
+api:
+  replicaCount: 1
+  env:
+    APP_ENV: staging
+    APP_LOG_LEVEL: DEBUG
+  autoscaling:
+    enabled: false
+  podDisruptionBudget:
+    enabled: false
+
+web:
+  replicaCount: 1
+
+ingress:
+  host: orders.staging.example.com
+  tls:
+    secretName: order-management-staging-tls
+
+database:
+  host: postgres-staging.rds.amazonaws.com

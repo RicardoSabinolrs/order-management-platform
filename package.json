@@ -1,0 +1,15 @@
+{
+  "name": "order-management-platform",
+  "private": true,
+  "packageManager": "pnpm@11.17.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @oms/web dev",
+    "build": "pnpm --filter @oms/web build",
+    "lint": "pnpm --filter @oms/web lint",
+    "typecheck": "pnpm --filter @oms/web typecheck",
+    "test": "pnpm --filter @oms/web test"
+  }
+}

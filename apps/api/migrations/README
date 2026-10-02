@@ -1,0 +1,7 @@
+Migrations do Alembic (engine assincrono, URL vinda de order_management.config).
+
+  make revision m="cria tabela orders"   # autogenerate
+  make migrate                           # upgrade head
+
+Toda migration precisa de um downgrade funcional: o rollback do Argo CD depende
+disso.

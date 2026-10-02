@@ -1,0 +1,721 @@
+/* ---------------------------------------------------------------------------
+   Graficos
+   Uma matiz so: os graficos aqui comparam magnitude, e identidade vem do
+   rotulo ao lado da marca - nunca da cor sozinha.
+--------------------------------------------------------------------------- */
+
+/* -- grade do painel ------------------------------------------------------- */
+.dash {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+}
+
+.dash__row {
+  display: grid;
+  gap: var(--space-5);
+  align-items: stretch;
+}
+
+/* Cartoes da mesma linha com a mesma altura; o corpo cresce para ocupar. */
+.dash__row > .card {
+  display: flex;
+  flex-direction: column;
+}
+
+.dash__row > .card > .card__body {
+  flex: 1;
+}
+
+.dash__row--wide {
+  grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+}
+
+.dash__row--thirds {
+  grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.9fr) minmax(0, 1fr);
+}
+
+@media (max-width: 1180px) {
+  .dash__row--wide,
+  .dash__row--thirds {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+/* -- indicadores ----------------------------------------------------------- */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-5);
+}
+
+/* Os cinco numa faixa so quando cabem; abaixo disso, quebram sozinhos. */
+@media (min-width: 1280px) {
+  .kpis {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* Cada matiz pinta o icone e o fundo dele; o resto do cartao e neutro. */
+[data-hue='blue'] { --hue: var(--hue-blue); }
+[data-hue='pink'] { --hue: var(--hue-pink); }
+[data-hue='orange'] { --hue: var(--hue-orange); }
+[data-hue='teal'] { --hue: var(--hue-teal); }
+[data-hue='violet'] { --hue: var(--hue-violet); }
+
+.kpi {
+  display: grid;
+  gap: var(--space-3);
+  /* Altura minima igual em todos: a faixa fica alinhada com ou sem variacao. */
+  min-height: 132px;
+  align-content: start;
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.kpi:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.kpi__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.kpi__icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--hue, var(--accent)) 14%, transparent);
+  color: var(--hue, var(--accent));
+  /* Anel externo, como no template: destaca o icone sem pesar o cartao. */
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--hue, var(--accent)) 6%, transparent);
+}
+
+.kpi__label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--ink-secondary);
+}
+
+.kpi__body {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* Figuras proporcionais: tabular-nums deixa um numero grande frouxo. */
+.kpi__value {
+  min-width: 0;
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kpi__hint {
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kpi[data-tone='warn'] .kpi__value { color: var(--warning); }
+.kpi[data-tone='critical'] .kpi__value { color: var(--critical); }
+
+/* Direcao acompanhada de icone e sinal: a cor sozinha nao carrega o sentido. */
+.kpi__delta {
+  display: grid;
+  justify-items: end;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi__delta-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-xs);
+  font-weight: 650;
+}
+
+.kpi__delta[data-direction='up'] .kpi__delta-value { color: var(--good); }
+.kpi__delta[data-direction='down'] .kpi__delta-value { color: var(--critical); }
+.kpi__delta[data-direction='down'] svg { transform: scaleY(-1); }
+
+.kpi__delta-label {
+  font-size: var(--text-2xs);
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+.spark {
+  display: block;
+  width: 100%;
+  height: 28px;
+  margin-top: var(--space-2);
+  overflow: visible;
+}
+
+.spark__line {
+  fill: none;
+  stroke: var(--hue, var(--series));
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.spark__area { fill: color-mix(in srgb, var(--hue, var(--series)) 14%, transparent); }
+
+.spark__end {
+  fill: var(--hue, var(--series));
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+
+/* -- serie temporal -------------------------------------------------------- */
+.trend {
+  position: relative;
+  height: 100%;
+  min-height: 280px;
+}
+
+/* Fora do fluxo: o SVG segue a caixa medida e nunca a empurra, ou a
+   medicao e o desenho se realimentariam. */
+.trend svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.trend__grid {
+  stroke: var(--grid);
+  stroke-width: 1;
+  stroke-dasharray: 4 6;
+}
+
+.trend__axis-label {
+  fill: var(--ink-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.trend__area {
+  fill: var(--series-wash);
+}
+
+.trend__line {
+  fill: none;
+  stroke: var(--series);
+  stroke-width: 3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.trend__crosshair {
+  stroke: var(--axis);
+  stroke-width: 1;
+}
+
+/* Anel na cor da superficie mantem o ponto legivel sobre a linha. */
+.trend__marker {
+  fill: var(--series);
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+
+.trend__hit {
+  fill: transparent;
+  cursor: crosshair;
+}
+
+.trend__tooltip {
+  position: absolute;
+  top: 0;
+  transform: translate(-50%, -100%);
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+.trend__tooltip-date {
+  font-size: var(--text-2xs);
+  color: var(--ink-muted);
+}
+
+.trend__tooltip-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+/* Chave em traco, nao caixa: na densidade do tooltip a caixa e tinta demais. */
+.trend__key {
+  width: 10px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--series);
+}
+
+.trend__tooltip-value {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.trend__tooltip-label {
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+}
+
+/* -- lista de reposicao ---------------------------------------------------- */
+.reorder {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reorder__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+}
+
+.reorder__icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.reorder__icon[data-zero='true'] {
+  background: var(--critical-soft);
+  color: var(--critical);
+}
+
+.reorder__sku {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.reorder__meta {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+
+.reorder__value {
+  display: grid;
+  justify-items: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.reorder__count {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.reorder__count[data-zero='true'] {
+  color: var(--critical);
+}
+
+.reorder__unit {
+  font-size: var(--text-2xs);
+  color: var(--ink-muted);
+}
+
+/* -- rosca ----------------------------------------------------------------- */
+.donut {
+  display: grid;
+  gap: var(--space-5);
+  justify-items: center;
+}
+
+.donut__figure {
+  position: relative;
+  width: min(200px, 100%);
+}
+
+.donut__figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.donut__track {
+  fill: none;
+  stroke: var(--surface-sunken);
+  stroke-width: 11;
+}
+
+.donut__slice {
+  fill: none;
+  stroke-width: 11;
+  stroke-linecap: butt;
+  transition: stroke-dasharray 400ms ease;
+}
+
+.donut__center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+.donut__total {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.donut__unit {
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+}
+
+.donut__legend {
+  display: grid;
+  gap: var(--space-1);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.donut__item {
+  display: grid;
+  grid-template-columns: auto 1fr auto 4ch;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 6px var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+}
+
+.donut__item:hover {
+  background: var(--surface-hover);
+}
+
+.donut__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.donut__label {
+  color: var(--ink-secondary);
+}
+
+.donut__value {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.donut__share {
+  text-align: right;
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* -- medidor --------------------------------------------------------------- */
+.gauge {
+  position: relative;
+  width: min(220px, 100%);
+  margin: 0 auto;
+}
+
+.gauge svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.gauge__tick {
+  stroke: var(--line);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+
+.gauge__tick[data-on='true'] {
+  stroke: var(--hue-orange);
+}
+
+.gauge__center {
+  position: absolute;
+  inset: 0 0 12% 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+.gauge__value {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.gauge__label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--good);
+}
+
+.gauge-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  margin: var(--space-4) 0 0;
+  padding-top: var(--space-4);
+  border-top: 1px dashed var(--line);
+  text-align: center;
+}
+
+.gauge-stats dt {
+  font-size: var(--text-2xs);
+  color: var(--ink-muted);
+}
+
+.gauge-stats dd {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* -- medidores lineares ---------------------------------------------------- */
+.meters {
+  display: grid;
+  gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.meter {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.meter__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.meter__label {
+  font-size: var(--text-sm);
+  color: var(--ink-secondary);
+}
+
+.meter__value {
+  font-size: var(--text-md);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.meter__value span {
+  font-size: var(--text-xs);
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+
+.meter__track {
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.meter__fill {
+  display: block;
+  height: 100%;
+  min-width: 4px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--hue) 55%, transparent), var(--hue));
+  transition: width 400ms ease;
+}
+
+/* -- pessoa na tabela ------------------------------------------------------ */
+.person {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.person__avatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--hue) 16%, transparent);
+  color: var(--hue);
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+
+/* -- banner de boas-vindas ------------------------------------------------- */
+.hero-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-8) var(--space-8);
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--gradient-brand);
+  color: #fff;
+  box-shadow: var(--shadow-accent);
+  isolation: isolate;
+}
+
+/* Brilho difuso no canto: da profundidade sem imagem de fundo. */
+.hero-card::before {
+  content: '';
+  position: absolute;
+  inset: -40% -10% auto auto;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 255 255 / 28%), transparent 65%);
+  z-index: -1;
+}
+
+.hero-card__eyebrow {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.hero-card__title {
+  margin-top: var(--space-2);
+  font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.1rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.hero-card__text {
+  margin-top: var(--space-2);
+  max-width: 52ch;
+  font-size: var(--text-md);
+  opacity: 0.9;
+}
+
+.hero-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.hero-card__art {
+  position: relative;
+  width: 260px;
+  height: 170px;
+}
+
+.hero-card__rings {
+  position: absolute;
+  right: -30px;
+  top: 50%;
+  width: 240px;
+  height: 240px;
+  transform: translateY(-50%);
+}
+
+.hero-card__rings circle {
+  fill: none;
+  stroke: rgb(255 255 255 / 22%);
+  stroke-width: 1;
+}
+
+.hero-card__glass {
+  position: absolute;
+  display: grid;
+  gap: 2px;
+  padding: 12px 16px;
+  border: 1px solid rgb(255 255 255 / 28%);
+  border-radius: 14px;
+  background: rgb(255 255 255 / 14%);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 12px 30px rgb(20 10 80 / 25%);
+}
+
+.hero-card__glass span {
+  font-size: var(--text-2xs);
+  opacity: 0.85;
+}
+
+.hero-card__glass strong {
+  font-size: var(--text-xl);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.hero-card__glass--a {
+  top: 6px;
+  left: 0;
+}
+
+.hero-card__glass--b {
+  bottom: 6px;
+  right: 10px;
+}
+
+@media (max-width: 760px) {
+  .hero-card {
+    grid-template-columns: 1fr;
+    padding: var(--space-6);
+  }
+
+  .hero-card__art {
+    display: none;
+  }
+}

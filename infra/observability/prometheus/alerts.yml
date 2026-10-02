@@ -1,0 +1,36 @@
+# Alertas orientados a sintoma (o que o usuario sente), nao a causa.
+groups:
+  - name: order-management-api
+    rules:
+      - alert: ApiIndisponivel
+        expr: up{job="order-management-api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API fora do ar"
+          description: "O Prometheus nao coleta metricas da API ha 2 minutos."
+
+      - alert: TaxaDeErro5xxAlta
+        expr: |
+          sum(rate(http_requests_total{status=~"5.."}[5m]))
+            / sum(rate(http_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Mais de 5% das requisicoes falhando"
+          description: "Taxa de 5xx acima de 5% na janela de 5 minutos."
+
+      - alert: LatenciaP99Alta
+        expr: |
+          histogram_quantile(
+            0.99,
+            sum by (le, path) (rate(http_request_duration_seconds_bucket[5m]))
+          ) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "p99 acima de 1s em {{ $labels.path }}"
+          description: "Latencia do percentil 99 degradada por 10 minutos."

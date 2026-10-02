@@ -1,0 +1,16 @@
+{{ .Chart.Name }} {{ .Chart.AppVersion }} liberado como "{{ .Release.Name }}" em {{ .Release.Namespace }}.
+
+Imagens:
+  API: {{ include "order-management.apiImage" . }}
+  Web: {{ include "order-management.webImage" . }}
+
+{{ if .Values.ingress.enabled -}}
+Acesso: http{{ if .Values.ingress.tls.enabled }}s{{ end }}://{{ .Values.ingress.host }}
+{{- else -}}
+Sem ingress. Para acesso local:
+  kubectl port-forward svc/{{ include "order-management.fullname" . }}-api 8000:80
+{{- end }}
+
+Verificacao rapida:
+  kubectl get pods -l app.kubernetes.io/instance={{ .Release.Name }}
+  kubectl logs -l app.kubernetes.io/component=migration --tail=50

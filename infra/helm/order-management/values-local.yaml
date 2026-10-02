@@ -1,0 +1,52 @@
+# Ambiente local em Minikube.
+#
+# As imagens sao construidas dentro do daemon do proprio Minikube
+# (`eval $(minikube docker-env)`), por isso registry vazio e pullPolicy Never:
+# nao existe registro para puxar.
+image:
+  registry: ""
+  repository: order-management
+  tag: local
+  pullPolicy: Never
+
+api:
+  replicaCount: 1
+  env:
+    APP_ENV: staging
+    APP_LOG_FORMAT: json
+    APP_LOG_LEVEL: DEBUG
+  autoscaling:
+    enabled: false
+  podDisruptionBudget:
+    enabled: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 192Mi
+    limits:
+      memory: 512Mi
+
+web:
+  replicaCount: 1
+
+database:
+  host: postgres
+  port: 5432
+  name: order_management
+  user: order_management
+  existingSecret: order-management-db
+  existingSecretPasswordKey: password
+
+ingress:
+  enabled: true
+  className: nginx
+  host: order-management.local
+  tls:
+    enabled: false
+    secretName: ""
+  annotations: {}
+
+# Só habilite depois de instalar o kube-prometheus-stack
+# (`make minikube-observability`): sem o CRD, o release falha.
+serviceMonitor:
+  enabled: false

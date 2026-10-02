@@ -1,0 +1,18 @@
+{{- if .Values.serviceMonitor.enabled }}
+# Requer o Prometheus Operator (kube-prometheus-stack) instalado no cluster.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "order-management.fullname" . }}-api
+  labels:
+    {{- include "order-management.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "order-management.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: api
+  endpoints:
+    - port: http
+      path: {{ .Values.serviceMonitor.path }}
+      interval: {{ .Values.serviceMonitor.interval }}
+{{- end }}
