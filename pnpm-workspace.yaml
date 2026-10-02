@@ -2,9 +2,8 @@ packages:
   - "apps/web"
   - "packages/*"
 
+# Scripts de build permitidos. O pnpm bloqueia todos por padrao (supply
+# chain) e, no CI, um pacote sem decisao aqui derruba o install. O esbuild
+# precisa do postinstall para baixar o binario da plataforma.
 allowBuilds:
-  esbuild: set this to true or false
-
-# Scripts de build permitidos (pnpm bloqueia por padrao, por supply chain).
-onlyBuiltDependencies:
-  - esbuild
+  esbuild: true

@@ -6,6 +6,7 @@ objeto-relacional tambem esta correto - que o que foi gravado volta igual.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from uuid import uuid4
 
 import pytest
@@ -165,7 +166,7 @@ async def test_troca_de_linhas_remove_as_antigas(unit_of_work_factory) -> None:
     async with unit_of_work_factory() as uow:
         loaded = await uow.orders.get(order.id)
         assert loaded is not None
-        loaded.replace_items([OrderItem(**{**item.__dict__, "quantity": 7})])
+        loaded.replace_items([replace(item, quantity=7)])
         await uow.orders.save(loaded)
         await uow.commit()
 

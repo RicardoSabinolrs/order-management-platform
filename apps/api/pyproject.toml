@@ -130,6 +130,11 @@ minversion = "8.0"
 testpaths = ["tests"]
 pythonpath = ["src"]
 asyncio_mode = "auto"
+# Um loop so para a sessao inteira: o engine dos testes de integracao nasce
+# numa fixture de sessao, e conexao asyncpg nao atravessa loops. Com loop por
+# teste, o pool entregaria a segunda requisicao a um loop que ja fechou.
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
 addopts = "-ra --strict-markers --strict-config"
 markers = [
     "integration: exige infraestrutura externa (postgres)",
